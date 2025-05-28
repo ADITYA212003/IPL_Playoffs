@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Playoff Analysis</title>
+    <style>
+        /* General Reset & Body Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacMacFont, sans-serif;
+            background-color: #f8f9fa; /* Light grey background for a clean look */
+            min-height: 100vh;
+            line-height: 1.6;
+            color: #343a40; /* Darker text for better readability */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hero Section Styling */
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+            background: #ffffff; /* Pure white background */
+            padding: 60px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            color: #212529; /* Very dark grey for headings */
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.6em;
+            color: #495057; /* Medium grey */
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .hero .tagline {
+            font-size: 1.1em;
+            color: #6c757d; /* Lighter grey for descriptive text */
+            max-width: 700px;
+            margin: 0 auto 30px;
+            line-height: 1.7;
+        }
+
+        .highlight-stat {
+            display: inline-block;
+            background-color: #e9ecef; /* Light grey highlight background */
+            color: #212529; /* Dark text on highlight */
+            padding: 15px 30px;
+            border-radius: 30px; /* Pill shape */
+            font-size: 1.2em;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for emphasis */
+        }
+
+        /* Generic Section Styling */
+        .section {
+            background: #ffffff;
+            padding: 50px 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #212529;
+            font-weight: 700;
+        }
+
+        /* Card Grid Layout */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        /* Individual Card Styling */
+        .card {
+            background: #f8f9fa; /* Slightly off-white for cards */
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e0e0e0; /* Subtle border */
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth hover effects */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h4 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .card-metric {
+            font-size: 3em;
+            font-weight: 800;
+            margin: 10px 0;
+            color: #007bff; /* A professional blue for key metrics */
+        }
+        .card-metric.alt {
+            color: #28a745; /* A subtle green for "reality" or success metrics */
+        }
+
+        .card-label {
+            font-size: 1em;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        /* Playoff Format Specifics */
+        .playoff-steps .card {
+            text-align: left;
+        }
+        .playoff-steps .card h4 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .playoff-steps .card p {
+            margin: 8px 0;
+            font-size: 1em;
+            color: #495057;
+        }
+        .playoff-steps .card strong {
+            color: #212529;
+        }
+
+        .playoff-summary {
+            background-color: #e9ecef; /* Light grey background for summary */
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        .playoff-summary h3 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+            color: #212529;
+        }
+        .playoff-summary p {
+            font-size: 1.1em;
+            color: #495057;
+        }
+        .playoff-summary strong {
+            color: #dc3545; /* A distinct red for emphasis on critical points */
+        }
+
+        /* Insights Card Styling */
+        .insight-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .insight-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .insight-card .metric-big {
+            font-size: 3.5em;
+            font-weight: 800;
+            color: #007bff;
+            margin: 15px 0;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .insight-card .metric-label {
+            font-size: 1.1em;
+            color: #6c757d;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Table Styling */
+        .table-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 35px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow-x: auto; /* Ensures responsiveness for tables */
+        }
+
+        .table-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden; /* Ensures rounded corners on table */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: #ffffff;
+        }
+
+        th {
+            background-color: #007bff; /* Primary blue for table headers */
+            color: white;
+            padding: 15px 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.95em;
+            text-align: left;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e9ecef; /* Light border between rows */
+            font-weight: 400;
+            font-size: 0.98em;
+            color: #495057;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none; /* No border on the last row */
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa; /* Zebra striping for readability */
+        }
+
+        tbody tr:hover {
+            background-color: #e9f5ff; /* Light blue on hover for interactivity */
+            cursor: pointer;
+        }
+
+        .highlight-cell {
+            background-color: #fff3cd; /* Soft yellow for specific highlights */
+            color: #856404; /* Darker yellow text for contrast */
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .bold-cell {
+            font-weight: 600;
+            color: #212529;
+        }
+
+        /* Social Proof Section */
+        .social-proof {
+            background-color: #e9ecef; /* Light grey background */
+            color: #343a40;
+            padding: 50px 40px;
+            border-radius: 15px;
+            margin: 50px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .social-proof h2 {
+            font-size: 2em;
+            margin-bottom: 25px;
+            color: #212529;
+        }
+
+        .social-proof p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .social-btn {
+            background-color: #007bff; /* Primary blue for buttons */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid #007bff;
+        }
+
+        .social-btn:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            border-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .emoji {
+            font-size: 1.5em; /* Standard size for emojis */
+        }
+
+        /* Responsive Design Adjustments */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2em;
+            }
+            .hero .subtitle {
+                font-size: 1.2em;
+            }
+            .section-title {
+                font-size: 2em;
+            }
+            .card-grid, .playoff-steps, .insights-grid {
+                grid-template-columns: 1fr; /* Stack columns on small screens */
+            }
+            .container {
+                padding: 15px;
+            }
+            .section, .table-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>IPL Playoff Analysis</h1>
+            <div class="subtitle">Uncovering Trends in Championship Success</div>
+            <div class="tagline">
+                An analysis of 14 years of IPL finals since the introduction of the current playoffs format reveals surprising insights into the performance of teams based on their league stage standings.
+            </div>
+            <div class="highlight-stat">
+                Remarkably, 57% of IPL winners since 2011 finished 2nd in the league stage!
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Theory (Statistics) vs. Reality in IPL Playoffs</h2>
+            <p style="font-size: 1.1em; text-align: center; margin-bottom: 30px; color: #495057;">
+                Contrasting conventional expectations with actual outcomes in the IPL playoff format.
+            </p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Top 2 Teams Reaching Finals</h4>
+                    <div class="card-metric">75%</div>
+                    <div class="card-label">Theoretical Expectation</div>
+                    <div class="card-metric alt">92.9%</div>
+                    <div class="card-label">Actual (26/28 instances)</div>
+                </div>
+
+                <div class="card">
+                    <h4>Teams 3 and 4 Reaching Finals</h4>
+                    <div class="card-metric">25%</div>
+                    <div class="card-label">Theoretical Expectation</div>
+                    <div class="card-metric alt">7.1%</div>
+                    <div class="card-label">Actual (2/28 instances)</div>
+                </div>
+
+                <div class="card">
+                    <h4>Top 2 Teams Winning Titles</h4>
+                    <div class="card-metric">37.5%</div>
+                    <div class="card-label">Theoretical Expectation</div>
+                    <div class="card-metric alt">93%</div>
+                    <div class="card-label">Actual (13/14 instances)</div>
+                </div>
+
+                <div class="card">
+                    <h4>Teams 3 and 4 Winning Titles</h4>
+                    <div class="card-metric">12.5%</div>
+                    <div class="card-label">Theoretical Expectation</div>
+                    <div class="card-metric alt">7%</div>
+                    <div class="card-label">Actual (1/14 instances)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Understanding the IPL Playoff Format</h2>
+            
+            <p style="font-size: 1.1em; text-align: center; margin-bottom: 20px; color: #495057;">
+                The structure of the IPL playoffs significantly impacts team success.
+            </p>
+            <div class="card-grid playoff-steps">
+                <div class="card">
+                    <h4>Qualifier 1 (Q1)</h4>
+                    <p><strong>Teams:</strong> 1st vs. 2nd place</p>
+                    <p><strong>Winner:</strong> Advances directly to the Final</p>
+                    <p><strong>Loser:</strong> Gets a second opportunity in Qualifier 2</p>
+                </div>
+                <div class="card">
+                    <h4>Eliminator (E1)</h4>
+                    <p><strong>Teams:</strong> 3rd vs. 4th place</p>
+                    <p><strong>Winner:</strong> Advances to Qualifier 2</p>
+                    <p><strong>Loser:</strong> Is eliminated from the tournament</p>
+                </div>
+                <div class="card">
+                    <h4>Qualifier 2 (Q2)</h4>
+                    <p><strong>Teams:</strong> Loser of Q1 vs. Winner of E1</p>
+                    <p><strong>Winner:</strong> Progresses to the Final</p>
+                    <p><strong>Loser:</strong> Is eliminated</p>
+                </div>
+            </div>
+            <div class="playoff-summary">
+                <h3>Key Takeaway: Playoff Advantage</h3>
+                <p><strong>Top 2 teams are granted two chances to reach the final,</strong> while teams finishing 3rd and 4th have only one opportunity. This format heavily favors the top two sides, explaining why 93% of finals spots are secured by them.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Key Insights from IPL Finals Data since 2011</h2>
+            <div class="card-grid insights-grid">
+                <div class="insight-card">
+                    <h3><span class="emoji">👑</span> Most Successful Team</h3>
+                    <div style="text-align: center;">
+                        <div><strong>Mumbai Indians</strong></div>
+                        <div class="metric-big">100%</div>
+                        <div class="metric-label">Finals Win Rate (5 titles in 5 finals)</div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h3><span class="emoji">🎯</span> Most Consistent Finalist</h3>
+                    <div style="text-align: center;">
+                        <div><strong>Chennai Super Kings</strong></div>
+                        <div class="metric-big">8</div>
+                        <div class="metric-label">Finals in 12 seasons (66.66% rate)</div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h3><span class="emoji">📊</span> Optimal League Position</h3>
+                    <div style="text-align: center;">
+                        <div><strong>2nd Position Teams</strong></div>
+                        <div class="metric-big">8/14</div>
+                        <div class="metric-label">IPL titles won (57% success rate)</div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h3><span class="emoji">🌟</span> Greatest Underdog Victory</h3>
+                    <div style="text-align: center;">
+                        <div><strong>SRH 2016</strong></div>
+                        <div class="metric-big">3rd</div>
+                        <div class="metric-label">The only team below top 2 to win an IPL title</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-title">
+                <span class="emoji"></span>
+                Year-by-Year IPL Finals Analysis since 2011
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Winner</th>
+                        <th>Runner Up</th>
+                        <th>Winner Position</th>
+                        <th>Runner Up Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="bold-cell">2011</td><td>CSK</td><td>RCB</td><td>2</td><td>1</td></tr>
+                    <tr><td class="bold-cell">2012</td><td>KKR</td><td>CSK</td><td>2</td><td>4</td></tr>
+                    <tr><td class="bold-cell">2013</td><td>MI</td><td>CSK</td><td>2</td><td>1</td></tr>
+                    <tr><td class="bold-cell">2014</td><td>KKR</td><td>PBKS</td><td>2</td><td>1</td></tr>
+                    <tr><td class="bold-cell">2015</td><td>MI</td><td>CSK</td><td>2</td><td>1</td></tr>
+                    <tr><td class="bold-cell">2016</td><td>SRH</td><td>RCB</td><td>3</td><td>2</td></tr>
+                    <tr><td class="bold-cell">2017</td><td>MI</td><td>RPS</td><td>1</td><td>2</td></tr>
+                    <tr><td class="bold-cell">2018</td><td>CSK</td><td>SRH</td><td>2</td><td>1</td></tr>
+                    <tr><td class="bold-cell">2019</td><td>MI</td><td>CSK</td><td>1</td><td>2</td></tr>
+                    <tr><td class="bold-cell">2020</td><td>MI</td><td>DC</td><td>1</td><td>2</td></tr>
+                    <tr><td class="bold-cell">2021</td><td>CSK</td><td>KKR</td><td>2</td><td>1</td></tr>
+                    <tr><td class="bold-cell">2022</td><td>GT</td><td>RR</td><td>1</td><td>2</td></tr>
+                    <tr><td class="bold-cell">2023</td><td>CSK</td><td>GT</td><td>2</td><td>1</td></tr>
+                    <tr><td class="bold-cell">2024</td><td>KKR</td><td>SRH</td><td>1</td><td>2</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-container">
+            <div class="table-title">
+                <span class="emoji">🏆</span>
+                Championship Success Rate by League Position
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>League Position</th>
+                        <th>Finals Reached</th>
+                        <th>Titles Won</th>
+                        <th>Win Rate</th>
+                        <th>Observations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="bold-cell">1st Position</td>
+                        <td>11</td>
+                        <td class="bold-cell">5</td>
+                        <td>45.5%</td>
+                        <td>Strong, but not the leading winner</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">2nd Position</td>
+                        <td>14</td>
+                        <td class="bold-cell">8</td>
+                        <td class>57.1%</td>
+                        <td>Highest success rate for winning titles</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">3rd Position</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>100%</td>
+                        <td>A rare, successful outlier (SRH 2016)</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">4th Position</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>0%</td>
+                        <td>Reached one final, but no title</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-container">
+            <div class="table-title">
+                <span class="emoji">🏅</span>
+                Team Championship Records
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Finals Appearances</th>
+                        <th>Titles Won</th>
+                        <th>Finals Win Rate</th>
+                        <th>Championship Years</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="bold-cell">Mumbai Indians</td>
+                        <td>5</td>
+                        <td>5</td>
+                        <td>100.0%</td>
+                        <td>2013,2015, 2017, 2019, 2020</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">Chennai Super Kings</td>
+                        <td>8</td>
+                        <td>4</td>
+                        <td>50%</td>
+                        <td>2011, 2018, 2021, 2023</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">Kolkata Knight Riders</td>
+                        <td>3</td>
+                        <td>2</td>
+                        <td>66.7%</td>
+                        <td>2012, 2024</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">Sunrisers Hyderabad</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>50.0%</td>
+                        <td>2016</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">Gujarat Titans</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>50.0%</td>
+                        <td>2022</td>
+                    </tr>
+                    <tr>
+                        <td class="bold-cell">Royal Challengers Bangalore</td>
+                        <td>2</td>
+                        <td>0</td>
+                        <td>0.0%</td>
+                        <td>(Never won a title)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        
+    </div>
+</body>
+</html>
